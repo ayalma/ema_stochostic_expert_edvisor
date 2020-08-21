@@ -38,12 +38,21 @@ public:
 
      };
                     ~CSignal(void) {};
-   bool              init()
+   bool              init(int k_period,int d_period,int slowing,int slow_ema_period,int fast_ema_period)
      {
+      _k_period = k_period;
+      _d_period = d_period;
+      _slowing = slowing;
+      _slow_ema_period = slow_ema_period;
+      _fast_ema_period = fast_ema_period;
+     
       m_stochastic_handle = iStochastic(_Symbol,_Period,_k_period,_d_period,_slowing,MODE_EMA,STO_LOWHIGH);
       m_slow_ema_handle = iMA(_Symbol,_Period,_slow_ema_period,0,MODE_EMA,PRICE_CLOSE);
       m_fast_ema_handle = iMA(_Symbol,_Period,_fast_ema_period,0,MODE_EMA,PRICE_CLOSE);
       m_macd_handle = iMACD(_Symbol,_Period,12,26,9,PRICE_CLOSE);
+      
+    
+      
 
       return true;
      };
@@ -57,6 +66,7 @@ public:
       double            m_k_value[],m_d_value[];
       double m_macd_value[],m_signal_value[];
 
+
       ArraySetAsSeries(m_slow_ema_value,true);
       ArraySetAsSeries(m_fast_ema_value,true);
 
@@ -65,6 +75,9 @@ public:
 
       ArraySetAsSeries(m_macd_value,true);
       ArraySetAsSeries(m_signal_value,true);
+      
+  
+      
 
       CopyBuffer(m_stochastic_handle,0,0,3,m_k_value);
       CopyBuffer(m_stochastic_handle,1,0,3,m_d_value);
@@ -76,7 +89,10 @@ public:
 
       CopyBuffer(m_macd_handle,0,0,3,m_macd_value);
       CopyBuffer(m_macd_handle,1,0,3,m_signal_value);
-
+      
+    
+      
+      
 
       if(show)
         {
@@ -98,7 +114,7 @@ public:
         }
 
 
-
+   
 
       bool buyCond = ((m_k_value[0]<50)
                       && (m_d_value[0]<50)
@@ -148,6 +164,7 @@ public:
       ArraySetAsSeries(m_macd_value,true);
       ArraySetAsSeries(m_signal_value,true);
 
+
       CopyBuffer(m_stochastic_handle,0,0,3,m_k_value);
       CopyBuffer(m_stochastic_handle,1,0,3,m_d_value);
 
@@ -158,7 +175,9 @@ public:
 
       CopyBuffer(m_macd_handle,0,0,3,m_macd_value);
       CopyBuffer(m_macd_handle,1,0,3,m_signal_value);
-
+      
+ 
+   
       double currentMacdValue = m_macd_value[0];
       double lastMacdValue = m_macd_value[1];
       double currentSignalValue = m_signal_value[0];

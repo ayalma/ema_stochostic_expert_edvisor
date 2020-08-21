@@ -7,6 +7,16 @@
 #include "Signal.mq5"
 #include "BalanceCalculator.mqh"
 #include "NotificationManager.mqh"
+input group           "telegram configuration"
+input string chanellName,token;
+input group          "Stochostic configuration"
+input int    kPeriod = 5;
+input int  dPeriod = 3;
+input   int slowing = 3;
+input group          "ema configuration"
+input  int slowEmaPeriod = 4 ;
+input   int fastEmaPeriod = 2;
+
 CSignal signal;
 SignalType last;
 BalanceCalculator bc;
@@ -15,8 +25,8 @@ int OnInit()
   {
    last = NULL;
    bc.setBalance(100.0);
-   signal.init();
-   notifer=TelegramNotifier("","");
+   signal.init(kPeriod,dPeriod,slowing,slowEmaPeriod,fastEmaPeriod);
+   notifer=TelegramNotifier(chanellName,token);
    return(INIT_SUCCEEDED);
   }
 //+------------------------------------------------------------------+
@@ -37,7 +47,6 @@ void OnTick()
       return;
 
 
-   signal.init();
    SignalType sigType = signal.calculateV2(false);
    Comment(sigType);
    if((sigType !=NoTrade) && (last != sigType))
@@ -63,7 +72,7 @@ void OnTick()
       if(sigType == Sell)
         {
          bc.calculateProfit();
-         Print(bc.getBalance());
+         Print("balance is :",bc.getBalance());
 
         }
 
@@ -72,7 +81,7 @@ void OnTick()
                               StringSubstr(EnumToString(_Period),7),
                               DoubleToString(SymbolInfoDouble(_Symbol,SYMBOL_BID),_Digits),
                               TimeToString(time[0]));
-     // Print(msg);
+      //Print(msg);
       string res=notifer.notify(msg);
       if(res != "")
         {
