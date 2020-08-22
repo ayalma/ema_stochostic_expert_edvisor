@@ -47,8 +47,8 @@ void OnTick()
       return;
 
 
-   SignalType sigType = signal.calculateV2(false);
-   Comment(sigType);
+   SignalType sigType = signal.calculateV3(false);
+//Comment(sigType);
    if((sigType !=NoTrade) && (last != sigType))
      {
       if(sigType == Buy)
